@@ -1,0 +1,71 @@
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: victorz-cloud
+  description: Cloud platform services for victorz.cloud
+spec:
+  owner: team-platform
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: users-api
+  description: REST API for user management with JWT authentication
+  annotations:
+    github.com/project-slug: victorZKov/users-api
+    backstage.io/techdocs-ref: dir:.
+  tags:
+    - dotnet
+    - postgresql
+    - kubernetes
+  links:
+    - url: https://users-api.victorz.cloud/healthz
+      title: Health Check
+      icon: dashboard
+spec:
+  type: service
+  lifecycle: production
+  owner: team-platform
+  system: victorz-cloud
+  providesApis:
+    - users-api
+---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: users-api
+  description: Users CRUD + JWT authentication
+spec:
+  type: openapi
+  lifecycle: production
+  owner: team-platform
+  system: victorz-cloud
+  definition: |
+    openapi: "3.0.0"
+    info:
+      title: Users API
+      version: "1.0"
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: scraper-agent
+  description: AI-powered market intelligence platform — scrape, analyze, and deliver daily reports
+  annotations:
+    github.com/project-slug: victorZKov/ScraperAgent
+    backstage.io/techdocs-ref: dir:.
+  tags:
+    - dotnet
+    - nextjs
+    - postgresql
+    - kubernetes
+    - ai
+  links:
+    - url: https://github.com/victorZKov/ScraperAgent
+      title: Repository
+      icon: github
+spec:
+  type: service
+  lifecycle: production
+  owner: team-platform
+  system: victorz-cloud

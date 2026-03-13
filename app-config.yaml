@@ -1,0 +1,65 @@
+app:
+  title: Forge — AI-Native IDP
+  baseUrl: http://localhost:3000
+
+organization:
+  name: victorz.cloud
+
+backend:
+  baseUrl: http://localhost:7007
+  listen:
+    port: 7007
+  csp:
+    connect-src: ["'self'", 'http:', 'https:']
+  cors:
+    origin: http://localhost:3000
+    methods: [GET, HEAD, PATCH, POST, PUT, DELETE]
+    credentials: true
+  database:
+    client: pg
+    connection:
+      host: ${POSTGRES_HOST}
+      port: ${POSTGRES_PORT}
+      user: ${POSTGRES_USER}
+      password: ${POSTGRES_PASSWORD}
+
+auth:
+  environment: production
+  providers:
+    oidc:
+      production:
+        metadataUrl: https://id.quantumapi.eu/.well-known/openid-configuration
+        clientId: ${QUANTUMID_CLIENT_ID}
+        clientSecret: ${QUANTUMID_CLIENT_SECRET}
+        prompt: consent
+        scope: openid profile email
+
+catalog:
+  import:
+    entityFilename: catalog-info.yaml
+    pullRequestBranchName: backstage-integration
+
+  rules:
+    - allow: [Component, System, API, Resource, Location, Template]
+
+  locations:
+    # Local catalog entities
+    - type: file
+      target: ./catalog/all.yaml
+
+    # Remote service catalogs
+    - type: url
+      target: https://github.com/victorZKov/users-api/blob/main/catalog-info.yaml
+      rules:
+        - allow: [Component, API]
+
+    - type: url
+      target: https://github.com/victorZKov/ScraperAgent/blob/main/catalog-info.yaml
+      rules:
+        - allow: [Component, API]
+
+    # Templates
+    - type: file
+      target: ./templates/dotnet-api/template.yaml
+      rules:
+        - allow: [Template]

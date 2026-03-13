@@ -1,0 +1,88 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: dotnet-api
+  title: .NET API Service
+  description: Create a new .NET 10 API with PostgreSQL, JWT auth, and K8s deployment
+  tags:
+    - dotnet
+    - api
+    - recommended
+spec:
+  owner: team-platform
+  type: service
+
+  parameters:
+    - title: Service Details
+      required:
+        - name
+        - description
+        - owner
+      properties:
+        name:
+          title: Service Name
+          type: string
+          pattern: "^[a-z0-9-]+$"
+          ui:help: "Lowercase, dashes only. Example: invoice-api"
+        description:
+          title: Description
+          type: string
+        owner:
+          title: Owner
+          type: string
+          ui:field: OwnerPicker
+
+    - title: Infrastructure
+      properties:
+        database:
+          title: Database
+          type: string
+          enum: ["postgresql", "none"]
+          default: postgresql
+        auth:
+          title: Authentication
+          type: string
+          enum: ["quantumid-jwt", "api-key", "none"]
+          default: quantumid-jwt
+        kubernetes:
+          title: Deploy to Kubernetes
+          type: boolean
+          default: true
+
+  steps:
+    - id: fetch
+      name: Fetch Skeleton
+      action: fetch:template
+      input:
+        url: ./skeleton
+        values:
+          name: ${{ parameters.name }}
+          description: ${{ parameters.description }}
+          owner: ${{ parameters.owner }}
+          database: ${{ parameters.database }}
+          auth: ${{ parameters.auth }}
+          kubernetes: ${{ parameters.kubernetes }}
+
+    - id: publish
+      name: Publish to GitHub
+      action: publish:github
+      input:
+        allowedHosts: ["github.com"]
+        repoUrl: github.com?owner=victorZKov&repo=${{ parameters.name }}
+        description: ${{ parameters.description }}
+        defaultBranch: main
+
+    - id: register
+      name: Register in Catalog
+      action: catalog:register
+      input:
+        repoContentsUrl: ${{ steps.publish.output.repoContentsUrl }}
+        catalogInfoPath: /catalog-info.yaml
+
+  output:
+    links:
+      - title: Repository
+        url: ${{ steps.publish.output.remoteUrl }}
+      - title: Open in Catalog
+        icon: catalog
+        entityRef: ${{ steps.register.output.entityRef }}
