@@ -11,11 +11,8 @@ import { NavContentBlueprint } from '@backstage/plugin-app-react';
 import { SidebarLogo } from './SidebarLogo';
 import MenuIcon from '@material-ui/icons/Menu';
 import SearchIcon from '@material-ui/icons/Search';
+import SettingsIcon from '@material-ui/icons/Settings';
 import { SidebarSearchModal } from '@backstage/plugin-search';
-import {
-  UserSettingsSignInAvatar,
-  Settings as SidebarSettings,
-} from '@backstage/plugin-user-settings';
 
 export const SidebarContent = NavContentBlueprint.make({
   params: {
@@ -42,12 +39,8 @@ export const SidebarContent = NavContentBlueprint.make({
           </SidebarGroup>
           <SidebarSpace />
           <SidebarDivider />
-          <SidebarGroup
-            label="Settings"
-            icon={<UserSettingsSignInAvatar />}
-            to="/settings"
-          >
-            <SidebarSettings />
+          <SidebarGroup label="Settings" icon={<SettingsIcon />} to="/settings">
+            <SidebarItem icon={SettingsIcon} to="/settings" text="Settings" />
           </SidebarGroup>
         </Sidebar>,
       );
