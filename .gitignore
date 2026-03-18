@@ -21,6 +21,11 @@ Thumbs.db
 # Backstage
 *.local.yaml
 
+# pnpm / yarn
+pnpm-lock.yaml
+yarn.lock
+.yarn/
+
 # .NET AI Service
 ai-service/bin/
 ai-service/obj/

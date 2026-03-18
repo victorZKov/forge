@@ -1,0 +1,29 @@
+{
+  "name": "Forge — AI-Native IDP",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/workspaces/forge",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "20"
+    }
+  },
+  "postCreateCommand": "corepack enable && corepack prepare pnpm@9 --activate && pnpm install",
+  "forwardPorts": [3000, 7007, 5432],
+  "portsAttributes": {
+    "3000": { "label": "Backstage UI", "onAutoForward": "openBrowser" },
+    "7007": { "label": "Backstage Backend" },
+    "5432": { "label": "PostgreSQL" }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode"
+      ],
+      "settings": {
+        "editor.formatOnSave": true
+      }
+    }
+  }
+}

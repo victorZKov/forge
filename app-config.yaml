@@ -28,9 +28,9 @@ auth:
   providers:
     oidc:
       production:
-        metadataUrl: https://id.quantumapi.eu/.well-known/openid-configuration
-        clientId: ${QUANTUMID_CLIENT_ID}
-        clientSecret: ${QUANTUMID_CLIENT_SECRET}
+        metadataUrl: ${OIDC_METADATA_URL}    # e.g. https://id.quantumapi.eu/.well-known/openid-configuration
+        clientId: ${OIDC_CLIENT_ID}
+        clientSecret: ${OIDC_CLIENT_SECRET}
         prompt: consent
         scope: openid profile email
 
