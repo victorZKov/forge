@@ -24,15 +24,19 @@ backend:
       password: ${POSTGRES_PASSWORD}
 
 auth:
-  environment: production
+  environment: development
   providers:
+    guest:
+      dangerouslyAllowOutsideDevelopment: false
     oidc:
-      production:
+      development:
         metadataUrl: ${OIDC_METADATA_URL}    # e.g. https://id.quantumapi.eu/.well-known/openid-configuration
         clientId: ${OIDC_CLIENT_ID}
         clientSecret: ${OIDC_CLIENT_SECRET}
         prompt: consent
-        scope: openid profile email
+        additionalScopes:
+          - profile
+          - email
 
 catalog:
   import:
@@ -40,26 +44,15 @@ catalog:
     pullRequestBranchName: backstage-integration
 
   rules:
-    - allow: [Component, System, API, Resource, Location, Template]
+    - allow: [Component, System, API, Resource, Location, Template, Group, User]
 
   locations:
     # Local catalog entities
     - type: file
-      target: ./catalog/all.yaml
-
-    # Remote service catalogs
-    - type: url
-      target: https://github.com/victorZKov/users-api/blob/main/catalog-info.yaml
-      rules:
-        - allow: [Component, API]
-
-    - type: url
-      target: https://github.com/victorZKov/ScraperAgent/blob/main/catalog-info.yaml
-      rules:
-        - allow: [Component, API]
+      target: ../../catalog/all.yaml
 
     # Templates
     - type: file
-      target: ./templates/dotnet-api/template.yaml
+      target: ../../templates/dotnet-api/template.yaml
       rules:
         - allow: [Template]
