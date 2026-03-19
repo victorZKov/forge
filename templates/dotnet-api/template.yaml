@@ -67,7 +67,6 @@ spec:
       name: Publish to Git
       action: publish:github  # or publish:gitlab, publish:azure-devops
       input:
-        allowedHosts: ["github.com"]
         repoUrl: github.com?owner=victorZKov&repo=${{ parameters.name }}
         description: ${{ parameters.description }}
         defaultBranch: main

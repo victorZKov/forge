@@ -38,6 +38,11 @@ auth:
           - profile
           - email
 
+integrations:
+  github:
+    - host: github.com
+      token: ${GITHUB_TOKEN}  # Personal access token with repo scope
+
 catalog:
   import:
     entityFilename: catalog-info.yaml
