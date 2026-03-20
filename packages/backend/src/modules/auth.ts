@@ -26,14 +26,15 @@ export default createBackendModule({
               if (!profile.email) {
                 throw new Error('OIDC profile missing email');
               }
+              const userEntityRef = `user:default/${profile.email!.split('@')[0]}`;
               return ctx.signInWithCatalogUser({
                 filter: { 'spec.profile.email': profile.email },
               }).catch(() => {
                 // Auto-provision user on first login
                 return ctx.issueToken({
                   claims: {
-                    sub: profile.email!,
-                    ent: [`user:default/${profile.email!.split('@')[0]}`],
+                    sub: userEntityRef,
+                    ent: [userEntityRef],
                   },
                 });
               });

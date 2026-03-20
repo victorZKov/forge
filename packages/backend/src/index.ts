@@ -58,4 +58,8 @@ backend.add(import('@backstage/plugin-search-backend-module-techdocs'));
 // kubernetes plugin
 backend.add(import('@backstage/plugin-kubernetes-backend'));
 
+// catalog enricher (AI-powered metadata updates)
+import { catalogEnricherModule } from '@internal/plugin-catalog-enricher-backend';
+backend.add(catalogEnricherModule);
+
 backend.start();

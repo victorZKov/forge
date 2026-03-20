@@ -6,6 +6,9 @@ organization:
   name: victorz.cloud
 
 backend:
+  auth:
+    keys:
+      - secret: ${BACKEND_SECRET}
   baseUrl: http://localhost:7007
   listen:
     port: 7007
@@ -25,12 +28,14 @@ backend:
 
 auth:
   environment: development
+  session:
+    secret: ${BACKEND_SECRET}
   providers:
     guest:
       dangerouslyAllowOutsideDevelopment: false
     oidc:
       development:
-        metadataUrl: ${OIDC_METADATA_URL}    # e.g. https://id.quantumapi.eu/.well-known/openid-configuration
+        metadataUrl: ${OIDC_METADATA_URL}    # e.g. https://auth.quantumapi.eu/.well-known/openid-configuration
         clientId: ${OIDC_CLIENT_ID}
         clientSecret: ${OIDC_CLIENT_SECRET}
         prompt: consent
@@ -42,6 +47,10 @@ integrations:
   github:
     - host: github.com
       token: ${GITHUB_TOKEN}  # Personal access token with repo scope
+
+catalogEnricher:
+  aiServiceUrl: http://localhost:5100
+  githubToken: ${GITHUB_TOKEN}
 
 catalog:
   import:
