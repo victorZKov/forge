@@ -1,0 +1,1 @@
+export { aiIncidentPlugin } from './plugin';

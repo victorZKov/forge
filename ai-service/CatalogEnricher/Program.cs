@@ -565,7 +565,91 @@ app.MapPut("/api/governance/policies", async (PolicyUpdate update, IConfiguratio
     return Results.Ok(new { status = "updated" });
 });
 
+// --- Incident Response: AI-assisted diagnosis ---
+
+app.MapPost("/api/incident/analyze", async (IncidentRequest request, IConfiguration config) =>
+{
+    var endpoint = config["AI:Endpoint"];
+    var apiKey = config["AI:Key"];
+    var model = config["AI:ChatModel"] ?? "mistral-small-3.2-24b-instruct-2506";
+    var provider = config["AI:Provider"] ?? "openai";
+
+    ChatClient chatClient = provider.ToLowerInvariant() switch
+    {
+        "azure" => new AzureOpenAIClient(
+            new Uri(endpoint!), new ApiKeyCredential(apiKey!))
+            .GetChatClient(model),
+        _ => new OpenAIClient(
+            new ApiKeyCredential(apiKey!),
+            new OpenAIClientOptions { Endpoint = new Uri(endpoint!) })
+            .GetChatClient(model),
+    };
+
+    var systemPrompt = $"""
+        You are an incident response assistant for a cloud platform.
+        A service is experiencing issues. Analyze the available information
+        and provide a diagnosis.
+
+        SERVICE CONTEXT:
+        Name: {request.ServiceName}
+        Description: {request.ServiceDescription}
+        Dependencies: {string.Join(", ", request.Dependencies)}
+        Tags: {string.Join(", ", request.Tags)}
+
+        RECENT DEPLOYMENTS:
+        {request.RecentDeployments}
+
+        RECENT ERRORS (from logs):
+        {request.RecentErrors}
+
+        ARCHITECTURAL RULES (from GOTCHA.md):
+        {request.GotchaHeuristics}
+
+        Provide:
+        1. PROBABLE CAUSE — what most likely caused this incident, based on the evidence
+        2. EVIDENCE — which specific pieces of information led you to this conclusion
+        3. SUGGESTED ACTIONS — ordered list of steps to investigate and fix
+        4. RELATED SERVICES — which other services might be affected, based on dependencies
+
+        Be specific. Reference actual error messages, deployment changes, and service dependencies.
+        If you don't have enough information to diagnose, say so and suggest what data to collect.
+        """;
+
+    try
+    {
+        var completion = await chatClient.CompleteChatAsync(
+        [
+            new SystemChatMessage(systemPrompt),
+            new UserChatMessage(
+                $"Alert: {request.AlertTitle}\nSeverity: {request.Severity}\nStarted: {request.StartedAt}"),
+        ]);
+
+        var analysis = completion.Value.Content[0].Text.Trim();
+        return Results.Ok(new { analysis });
+    }
+    catch (ClientResultException ex) when (ex.Status == 401)
+    {
+        return Results.Json(new { error = "AI provider authentication failed." }, statusCode: 503);
+    }
+    catch (Exception ex)
+    {
+        return Results.Json(new { error = $"AI provider error: {ex.Message}" }, statusCode: 502);
+    }
+});
+
 app.Run();
+
+record IncidentRequest(
+    string ServiceName,
+    string ServiceDescription,
+    string[] Dependencies,
+    string[] Tags,
+    string RecentDeployments,
+    string RecentErrors,
+    string GotchaHeuristics,
+    string AlertTitle,
+    string Severity,
+    string StartedAt);
 
 record PolicyUpdate(string Team, string Action, bool Enabled, int? MaxDailyCalls);
 

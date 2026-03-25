@@ -71,4 +71,8 @@ backend.add(aiCodeReviewPlugin);
 import { techDocsRagPlugin } from '@internal/plugin-techdocs-rag';
 backend.add(techDocsRagPlugin);
 
+// AI-assisted incident response
+import { aiIncidentPlugin } from '@internal/plugin-ai-incident';
+backend.add(aiIncidentPlugin);
+
 backend.start();

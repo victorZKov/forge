@@ -41,6 +41,7 @@
     "@backstage/plugin-user-settings": "^0.8.20",
     "@backstage/theme": "^0.6.4",
     "@internal/plugin-ai-governance": "link:../../plugins/ai-governance",
+    "@internal/plugin-ai-incident-widget": "link:../../plugins/ai-incident-widget",
     "@internal/plugin-techdocs-rag-widget": "link:../../plugins/techdocs-rag-widget",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",

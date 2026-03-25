@@ -60,6 +60,7 @@ import {
 } from '@backstage/plugin-kubernetes';
 
 import { AskAiCard } from '@internal/plugin-techdocs-rag-widget';
+import { IncidentCard } from '@internal/plugin-ai-incident-widget';
 
 const techdocsContent = (
   <EntityTechdocsContent>
@@ -146,6 +147,9 @@ const overviewContent = (
     </Grid>
     <Grid item md={6} xs={12}>
       <AskAiCard />
+    </Grid>
+    <Grid item md={6} xs={12}>
+      <IncidentCard />
     </Grid>
   </Grid>
 );
