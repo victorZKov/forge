@@ -1,0 +1,18 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: tf-azurerm-resource-group
+  title: Azure Resource Group Module
+  description: "Creates an Azure resource group with standard tags"
+  tags:
+    - terraform
+    - azure
+    - foundation
+  annotations:
+    github.com/project-slug: victorZKov/forge
+    backstage.io/techdocs-ref: dir:.
+spec:
+  type: terraform-module
+  lifecycle: production
+  owner: team-platform
+  system: infrastructure

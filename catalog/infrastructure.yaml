@@ -1,0 +1,11 @@
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: infrastructure
+  title: Infrastructure Modules
+  description: "Terraform modules, deployment patterns, and environment definitions"
+  tags:
+    - terraform
+    - infrastructure
+spec:
+  owner: team-platform

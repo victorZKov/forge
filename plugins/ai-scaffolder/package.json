@@ -1,0 +1,18 @@
+{
+  "name": "@internal/plugin-ai-scaffolder",
+  "version": "0.1.0",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "private": true,
+  "backstage": {
+    "role": "backend-plugin-module"
+  },
+  "dependencies": {
+    "@backstage/backend-plugin-api": "*",
+    "@backstage/plugin-scaffolder-node": "*",
+    "fs-extra": "^11.2.0"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.4"
+  }
+}

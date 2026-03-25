@@ -1,0 +1,16 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: ${{ values.name }}
+  description: "${{ values.description }}"
+  tags:
+    - terraform
+    - ${{ values.cloud }}
+  annotations:
+    github.com/project-slug: victorZKov/${{ values.name }}
+    backstage.io/techdocs-ref: dir:.
+spec:
+  type: terraform-module
+  lifecycle: experimental
+  owner: ${{ values.owner }}
+  system: infrastructure

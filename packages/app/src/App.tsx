@@ -21,10 +21,11 @@ import {
 import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
 import { ReportIssue } from '@backstage/plugin-techdocs-module-addons-contrib';
 import { UserSettingsPage } from '@backstage/plugin-user-settings';
-import { apis } from './apis';
+import { apis, oidcAuthApiRef } from './apis';
 import { entityPage } from './components/catalog/EntityPage';
 import { searchPage } from './components/search/SearchPage';
 import { Root } from './components/Root';
+import { TechRadarPage } from '@backstage/plugin-tech-radar';
 
 import {
   AlertDisplay,
@@ -36,6 +37,7 @@ import { AppRouter, FlatRoutes } from '@backstage/core-app-api';
 import { CatalogGraphPage } from '@backstage/plugin-catalog-graph';
 import { RequirePermission } from '@backstage/plugin-permission-react';
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha';
+import { GovernancePage } from '@internal/plugin-ai-governance';
 
 const app = createApp({
   apis,
@@ -57,7 +59,20 @@ const app = createApp({
     });
   },
   components: {
-    SignInPage: props => <SignInPage {...props} auto providers={['guest']} />,
+    SignInPage: props => (
+      <SignInPage
+        {...props}
+        providers={[
+          {
+            id: 'oidc',
+            title: 'QuantumID',
+            message: 'Sign in with QuantumID (OIDC)',
+            apiRef: oidcAuthApiRef,
+          },
+          'guest',
+        ]}
+      />
+    ),
   },
 });
 
@@ -80,6 +95,10 @@ const routes = (
         <ReportIssue />
       </TechDocsAddons>
     </Route>
+      <Route
+          path="/tech-radar"
+          element={<TechRadarPage width={1500} height={800} />}
+      /> 
     <Route path="/create" element={<ScaffolderPage />} />
     <Route path="/api-docs" element={<ApiExplorerPage />} />
     <Route
@@ -95,6 +114,7 @@ const routes = (
     </Route>
     <Route path="/settings" element={<UserSettingsPage />} />
     <Route path="/catalog-graph" element={<CatalogGraphPage />} />
+    <Route path="/ai-governance" element={<GovernancePage />} />
   </FlatRoutes>
 );
 

@@ -1,0 +1,62 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: ai-service
+  title: AI-Powered Service (describe what you need)
+  description: Describe your service in plain English. AI generates the project with the right dependencies and a GOTCHA prompt.
+  tags:
+    - ai
+    - recommended
+spec:
+  owner: team-platform
+  type: service
+
+  parameters:
+    - title: What do you need?
+      required:
+        - description
+        - owner
+      properties:
+        description:
+          title: Describe your service
+          type: string
+          ui:widget: textarea
+          ui:options:
+            rows: 4
+          ui:placeholder: "A .NET API that manages invoices. It connects to PostgreSQL and publishes events to Service Bus when an invoice is created or paid. JWT auth via QuantumID. Deployed to Kubernetes."
+        owner:
+          title: Owner
+          type: string
+          ui:field: OwnerPicker
+
+  steps:
+    - id: ai-scaffold
+      name: Generate Project
+      action: forge:ai-scaffold
+      input:
+        description: ${{ parameters.description }}
+        owner: ${{ parameters.owner }}
+
+    - id: publish
+      name: Publish to GitHub
+      action: publish:github
+      input:
+        allowedHosts: ["github.com"]
+        repoUrl: github.com?owner=victorZKov&repo=${{ steps['ai-scaffold'].output.name }}
+        description: ${{ parameters.description }}
+        defaultBranch: main
+
+    - id: register
+      name: Register in Catalog
+      action: catalog:register
+      input:
+        repoContentsUrl: ${{ steps.publish.output.repoContentsUrl }}
+        catalogInfoPath: /catalog-info.yaml
+
+  output:
+    links:
+      - title: Repository
+        url: ${{ steps.publish.output.remoteUrl }}
+      - title: Open in Catalog
+        icon: catalog
+        entityRef: ${{ steps.register.output.entityRef }}

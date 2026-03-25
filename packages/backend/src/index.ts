@@ -22,6 +22,9 @@ backend.add(import('@backstage/plugin-auth-backend'));
 backend.add(import('@backstage/plugin-auth-backend-module-guest-provider'));
 // See https://backstage.io/docs/auth/guest/provider
 
+// OIDC auth (QuantumID, Entra ID, Keycloak, Auth0, or any OIDC provider)
+backend.add(import('./modules/auth'));
+
 // catalog plugin
 backend.add(import('@backstage/plugin-catalog-backend'));
 backend.add(
@@ -51,5 +54,21 @@ backend.add(import('@backstage/plugin-search-backend-module-techdocs'));
 
 // kubernetes
 backend.add(import('@backstage/plugin-kubernetes-backend'));
+
+// catalog enricher (AI-powered metadata updates)
+import { catalogEnricherModule } from '@internal/plugin-catalog-enricher-backend';
+backend.add(catalogEnricherModule);
+
+// AI-powered scaffolder action
+import { aiScaffoldModule } from './modules/aiScaffoldModule';
+backend.add(aiScaffoldModule);
+
+// AI code review (webhook-driven PR reviews with catalog context)
+import { aiCodeReviewPlugin } from '@internal/plugin-ai-code-review';
+backend.add(aiCodeReviewPlugin);
+
+// TechDocs RAG (indexes docs into pgvector, answers questions)
+import { techDocsRagPlugin } from '@internal/plugin-techdocs-rag';
+backend.add(techDocsRagPlugin);
 
 backend.start();

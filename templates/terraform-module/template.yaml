@@ -1,0 +1,85 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: terraform-module
+  title: New Terraform Module
+  description: Create a new Terraform module with standard structure, catalog metadata, and documentation.
+  tags:
+    - terraform
+    - infrastructure
+    - recommended
+spec:
+  owner: team-platform
+  type: terraform-module
+
+  parameters:
+    - title: Module Details
+      required:
+        - name
+        - cloud
+        - description
+        - owner
+      properties:
+        name:
+          title: Module Name
+          type: string
+          pattern: "^tf-[a-z]+-[a-z-]+$"
+          ui:placeholder: "tf-azurerm-storage-account"
+          ui:help: "Format: tf-{provider}-{resource}"
+        cloud:
+          title: Cloud Provider
+          type: string
+          enum:
+            - azurerm
+            - aws
+            - scaleway
+            - google
+          enumNames:
+            - Azure
+            - AWS
+            - Scaleway
+            - Google Cloud
+        description:
+          title: Description
+          type: string
+          ui:widget: textarea
+        owner:
+          title: Owner
+          type: string
+          ui:field: OwnerPicker
+
+  steps:
+    - id: fetch
+      name: Generate Module Structure
+      action: fetch:template
+      input:
+        url: ./skeleton
+        values:
+          name: ${{ parameters.name }}
+          cloud: ${{ parameters.cloud }}
+          description: ${{ parameters.description }}
+          owner: ${{ parameters.owner }}
+
+    - id: publish
+      name: Publish to GitHub
+      action: publish:github
+      input:
+        allowedHosts: ["github.com"]
+        repoUrl: github.com?owner=victorZKov&repo=${{ parameters.name }}
+        description: ${{ parameters.description }}
+        defaultBranch: main
+
+    - id: register
+      name: Register in Catalog
+      action: catalog:register
+      input:
+        repoContentsUrl: ${{ steps.publish.output.repoContentsUrl }}
+        catalogInfoPath: /catalog-info.yaml
+
+  output:
+    links:
+      - title: Repository
+        url: ${{ steps.publish.output.remoteUrl }}
+      - title: Open in Catalog
+        icon: catalog
+        entityRef: ${{ steps.register.output.entityRef }}

@@ -1,0 +1,1 @@
+export { aiCodeReviewPlugin } from './module';

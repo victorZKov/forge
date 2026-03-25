@@ -1,0 +1,1 @@
+export { techDocsRagPlugin } from './plugin';

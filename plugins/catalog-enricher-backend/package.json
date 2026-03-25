@@ -1,0 +1,17 @@
+{
+  "name": "@internal/plugin-catalog-enricher-backend",
+  "version": "0.1.0",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "private": true,
+  "backstage": {
+    "role": "backend-plugin-module"
+  },
+  "dependencies": {
+    "@backstage/backend-plugin-api": "*",
+    "@backstage/catalog-model": "*",
+    "@backstage/plugin-catalog-node": "*",
+    "@octokit/rest": "^21.0.0",
+    "yaml": "^2.4.0"
+  }
+}

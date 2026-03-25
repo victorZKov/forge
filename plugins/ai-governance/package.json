@@ -1,0 +1,17 @@
+{
+  "name": "@internal/plugin-ai-governance",
+  "version": "0.1.0",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "private": true,
+  "backstage": {
+    "role": "frontend-plugin"
+  },
+  "dependencies": {
+    "@backstage/core-components": "*",
+    "@backstage/core-plugin-api": "*",
+    "@material-ui/core": "^4.12.2",
+    "@material-ui/icons": "^4.9.1",
+    "react": "^18.0.2"
+  }
+}

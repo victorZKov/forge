@@ -1,0 +1,19 @@
+{
+  "name": "@internal/plugin-techdocs-rag-widget",
+  "version": "0.1.0",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "private": true,
+  "backstage": {
+    "role": "frontend-plugin"
+  },
+  "dependencies": {
+    "@backstage/catalog-model": "*",
+    "@backstage/core-components": "*",
+    "@backstage/core-plugin-api": "*",
+    "@backstage/plugin-catalog-react": "*",
+    "@material-ui/core": "^4.12.2",
+    "@material-ui/icons": "^4.9.1",
+    "react": "^18.0.2"
+  }
+}

@@ -59,6 +59,8 @@ import {
   isKubernetesAvailable,
 } from '@backstage/plugin-kubernetes';
 
+import { AskAiCard } from '@internal/plugin-techdocs-rag-widget';
+
 const techdocsContent = (
   <EntityTechdocsContent>
     <TechDocsAddons>
@@ -141,6 +143,9 @@ const overviewContent = (
     </Grid>
     <Grid item md={8} xs={12}>
       <EntityHasSubcomponentsCard variant="gridItem" />
+    </Grid>
+    <Grid item md={6} xs={12}>
+      <AskAiCard />
     </Grid>
   </Grid>
 );

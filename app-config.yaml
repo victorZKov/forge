@@ -1,20 +1,17 @@
 app:
   title: Scaffolded Backstage App
-  baseUrl: http://localhost:3000
+  baseUrl: http://localhost:3456
 
 organization:
   name: My Company
 
 backend:
-  # Used for enabling authentication, secret is shared by all backend plugins
-  # See https://backstage.io/docs/auth/service-to-service-auth for
-  # information on the format
-  # auth:
-  #   keys:
-  #     - secret: ${BACKEND_SECRET}
-  baseUrl: http://localhost:7007
+  auth:
+    keys:
+      - secret: ${BACKEND_SECRET}
+  baseUrl: http://localhost:7009
   listen:
-    port: 7007
+    port: 7009
     # Uncomment the following host directive to bind to specific interfaces
     # host: 127.0.0.1
   csp:
@@ -22,14 +19,21 @@ backend:
     # Content-Security-Policy directives follow the Helmet format: https://helmetjs.github.io/#reference
     # Default Helmet Content-Security-Policy values can be removed by setting the key to false
   cors:
-    origin: http://localhost:3000
+    origin: http://localhost:3456
     methods: [GET, HEAD, PATCH, POST, PUT, DELETE]
     credentials: true
   # This is for local development only, it is not recommended to use this in production
   # The production database configuration is stored in app-config.production.yaml
   database:
-    client: better-sqlite3
-    connection: ':memory:'
+    client: pg
+    connection:
+      host: localhost
+      port: 5432
+      user: postgres
+      password: ${POSTGRES_PASSWORD}
+    pool:
+      min: 0
+      max: 30
   # workingDirectory: /tmp # Use this to configure a working directory for the scaffolder, defaults to the OS temp-dir
 
 integrations:
@@ -44,12 +48,11 @@ integrations:
     #   token: ${GHE_TOKEN}
 
 proxy:
-  ### Example for how to add a proxy endpoint for the frontend.
-  ### A typical reason to do this is to handle HTTPS and CORS for internal services.
-  # endpoints:
-  #   '/test':
-  #     target: 'https://example.com'
-  #     changeOrigin: true
+  endpoints:
+    /ai-service:
+      target: http://localhost:5100
+      allowedHeaders: ['Content-Type']
+      allowedMethods: ['GET', 'POST', 'PUT']
 
 # Reference documentation http://backstage.io/docs/features/techdocs/configuration
 # Note: After experimenting with basic setup, use CI/CD to generate docs
@@ -58,15 +61,26 @@ proxy:
 techdocs:
   builder: 'local' # Alternatives - 'external'
   generator:
-    runIn: 'docker' # Alternatives - 'local'
+    runIn: 'local'
   publisher:
     type: 'local' # Alternatives - 'googleGcs' or 'awsS3'. Read documentation for using alternatives.
 
 auth:
-  # see https://backstage.io/docs/auth/ to learn about auth providers
+  environment: development
+  session:
+    secret: ${BACKEND_SECRET}
   providers:
-    # See https://backstage.io/docs/auth/guest/provider
-    guest: {}
+    guest:
+      dangerouslyAllowOutsideDevelopment: false
+    oidc:
+      development:
+        metadataUrl: ${OIDC_METADATA_URL}    # https://auth.quantumapi.eu/.well-known/openid-configuration
+        clientId: ${OIDC_CLIENT_ID}
+        clientSecret: ${OIDC_CLIENT_SECRET}
+        prompt: consent
+        additionalScopes:
+          - profile
+          - email
 
 scaffolder:
   # see https://backstage.io/docs/features/software-templates/configuration for software template options
@@ -88,6 +102,30 @@ catalog:
       rules:
         - allow: [Template]
 
+    # AI-powered service template
+    - type: file
+      target: ../../templates/ai-service/template.yaml
+      rules:
+        - allow: [Template]
+
+    # Terraform module template
+    - type: file
+      target: ../../templates/terraform-module/template.yaml
+      rules:
+        - allow: [Template]
+
+    # Infrastructure system
+    - type: file
+      target: ../../catalog/infrastructure.yaml
+      rules:
+        - allow: [System]
+
+    # Terraform modules
+    - type: file
+      target: ../../modules/tf-azurerm-resource-group/catalog-info.yaml
+      rules:
+        - allow: [Component, API]
+
     # Local example organizational data
     - type: file
       target: ../../examples/org.yaml
@@ -106,6 +144,13 @@ catalog:
   # Experimental: Always use the search method in UrlReaderProcessor.
   # New adopters are encouraged to enable it as this behavior will be the default in a future release.
   useUrlReadersSearch: true
+
+catalogEnricher:
+  aiServiceUrl: http://localhost:5100
+  githubToken: ${GITHUB_TOKEN}
+
+forge:
+  aiServiceUrl: http://localhost:5100
 
 kubernetes:
   # see https://backstage.io/docs/features/kubernetes/configuration for kubernetes configuration options
